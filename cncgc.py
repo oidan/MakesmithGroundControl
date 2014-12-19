@@ -16,24 +16,24 @@ along with the Makesmith Ground Control Software.  If not, see <http://www.gnu.o
 Copyright 2014 Bar Smith'''
 
 from tkinter import *
-import serial
+from tkinter import filedialog
+from tkinter import messagebox
+root = Tk()
 import re
 import threading
 import queue
-#import time
 import math
+#import time
 from time import gmtime, strftime
 from time import time
-import tkinter.messagebox
-root = Tk()
+import serial
 global serialCAN
-from tkinter import filedialog
-from tkinter import messagebox
 import serial.tools.list_ports
 
 
 class Data( ):
 	def __init__(self):
+		self.version = '0.58'
 		#Gcodes contains all of the lines of gcode in the opened file
 		self.gcode = []
 		#all of the available COM ports
@@ -151,15 +151,18 @@ class MainProgram( Frame ):
 		#self.view.add_command(label = 'Display Settings', command = self.updateSettings)
 		#self.view.add_command(label = 'Toggle Tool Width', command = self.tool_width_toggle)
 		#self.view.add_command(label = 'Toggle Color', command = self.color_toggle)
-		self.view.add_command(label = 'Version', command = self.versionNumber)
+		self.view.add_command(label =  'Version (' + self.dataBack.version + ')', command = self.versionNumber)
 		self.view.add_command(label = 'Update Gcode', command = self.reloadGcode)
 		self.view.add_command(label = 'View Gcode', command = self.viewGcode)
-		
 		
 		self.com = Menu(self.menu)
 		self.menu.add_cascade(label = 'Port', menu = self.com)
 		self.com.add_command(label = 'Update List', command = self.detectCOMports)
 		
+		self.help = Menu(self.menu)
+		self.menu.add_cascade(label = 'Help', menu = self.help)
+		self.help.add_command(label = 'About', command = self.aboutDialog)
+
 		
 		self.canvas_frame = Frame(root)
 		self.canvas_frame.pack(fill=BOTH, expand = 1, anchor = 'nw', side = LEFT) 
@@ -348,6 +351,9 @@ class MainProgram( Frame ):
 		self.recievemessage() #This checks if the CNC is hooked up and establishes a connection if it is
 		
 	
+	def aboutDialog(self):
+		messagebox.showinfo("About","Makesmith Ground Control\nSoftware Version: "+self.dataBack.version)
+
 	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
 		APPNAME = "Makesmith"
@@ -1144,7 +1150,6 @@ class MainProgram( Frame ):
 			self.dataBack.gcode = filtersparsed
 			filterfile.close() #closes the filter save file
 		except:
-			from tkinter import messagebox
 			if filename is not "":
 				messagebox.showwarning("Shucks", "Cannot reopen \n %s \n\n It may have been moved or deleted. To locate it or open a different file use File > Open G-code" % filename)
 			self.dataBack.gcodeFile = ""
@@ -1183,6 +1188,7 @@ class MainProgram( Frame ):
 				messageparsed = self.message_queue.get_nowait()
 			except:
 				print("message parse issue")
+
 			try:
 				if messageparsed == "gready\r\n":
 					self.dataBack.readyFlag = 1
@@ -1223,6 +1229,7 @@ class MainProgram( Frame ):
 					
 					if(self.dataBack.logflag == 1):
 						self.dataBack.logfile.write(messageparsed)
+						
 				
 				if self.dataBack.readyFlag == 1 and self.dataBack.uploadFlag == 1:
 					#print("Sending function called")
@@ -1291,7 +1298,7 @@ class MainProgram( Frame ):
 	#This displays the software version number and requests that the machine print it's firmware version number.
 	def versionNumber(self):
 		self.gcode_queue.put("B05 ")
-		self.gcode_queue.put("Software Version: 0.57 ")
+		self.gcode_queue.put("Software Version: " + self.dataBack.version)
 	
 	#resetOrigin moves the window back to the center of the screen if it has been moved to far to one side or another.
 	def resetOrigin(self):
@@ -1555,6 +1562,7 @@ class MainProgram( Frame ):
 		filename = "DataLog.txt"
 		try:
 			logfile = open(filename, 'w') #Opens the provided file name for writing which will replace any existing data
+			logfile.write("Software Version: " + self.dataBack.version) #Log GroundControl version
 			self.dataBack.logflag = 1
 			self.dataBack.logfile = logfile
 		except:
@@ -1762,8 +1770,6 @@ class MainProgram( Frame ):
 	
 	#loadGcode opens a new gcode file 
 	def loadGcode(self):
-		from tkinter import filedialog
-		import re
 		filename = filedialog.askopenfilename(initialdir = self.dataBack.gcodeFile)  #This opens the built in TK dialog box to open a file
 		if filename is not "":
 			self.dataBack.gcodeFile = filename
