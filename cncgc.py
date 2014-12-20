@@ -18,7 +18,6 @@ Copyright 2014 Bar Smith'''
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
-#import tkinter.messagebox
 import re
 import threading
 import queue
@@ -27,12 +26,13 @@ import math
 from time import gmtime, strftime
 from time import time
 root = Tk()
-global serialCAN
 import serial
 import serial.tools.list_ports
+global serialCAN
 import sys
 import os
 from os import path, environ
+import webbrowser
 
 
 class Data( ):
@@ -159,15 +159,16 @@ class MainProgram( Frame ):
 		self.view.add_command(label = 'Update Gcode', command = self.reloadGcode)
 		self.view.add_command(label = 'View Gcode', command = self.viewGcode)
 		
-		
 		self.com = Menu(self.menu)
 		self.menu.add_cascade(label = 'Port', menu = self.com)
 		self.com.add_command(label = 'Update List', command = self.detectCOMports)
 		
 		self.help = Menu(self.menu)
 		self.menu.add_cascade(label = 'Help', menu = self.help)
+		self.help.add_command(label = 'Getting Started', command = self.getSartedLink)
 		self.help.add_command(label = 'About', command = self.aboutDialog)
 		
+
 		self.canvas_frame = Frame(root)
 		self.canvas_frame.pack(fill=BOTH, expand = 1, anchor = 'nw', side = LEFT) 
 		
@@ -354,7 +355,9 @@ class MainProgram( Frame ):
 		self.detectCOMports()
 		self.recievemessage() #This checks if the CNC is hooked up and establishes a connection if it is
 		
-	
+	def getSartedLink(self):
+		webbrowser.open("http://www.makesmithtech.com/software-guide")	
+
 	def aboutDialog(self):
 		messagebox.showinfo("About", "Makesmith Ground Control\nSoftware Version: " + self.dataBack.version + "\nWritten by Bar Smith, Andrew Albinger, and Oidan")
 	
