@@ -165,7 +165,8 @@ class MainProgram( Frame ):
 		
 		self.help = Menu(self.menu)
 		self.menu.add_cascade(label = 'Help', menu = self.help)
-		self.help.add_command(label = 'Getting Started', command = self.getSartedLink)
+		self.help.add_command(label = 'Getting Started', command = lambda: webbrowser.open('http://www.makesmithtech.com/software-guide'))
+		self.help.add_command(label = 'Forum', command = lambda: webbrowser.open('http://makesmithtec.com'))
 		self.help.add_command(label = 'About', command = self.aboutDialog)
 		
 
@@ -355,9 +356,7 @@ class MainProgram( Frame ):
 		self.detectCOMports()
 		self.recievemessage() #This checks if the CNC is hooked up and establishes a connection if it is
 		
-	def getSartedLink(self):
-		webbrowser.open("http://www.makesmithtech.com/software-guide")	
-
+	
 	def aboutDialog(self):
 		messagebox.showinfo("About", "Makesmith Ground Control\nSoftware Version: " + self.dataBack.version + "\nWritten by Bar Smith, Andrew Albinger, and Oidan")
 	
