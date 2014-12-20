@@ -16,20 +16,23 @@ along with the Makesmith Ground Control Software.  If not, see <http://www.gnu.o
 Copyright 2014 Bar Smith'''
 
 from tkinter import *
-import serial
+from tkinter import filedialog
+from tkinter import messagebox
+#import tkinter.messagebox
 import re
 import threading
 import queue
-#import time
 import math
+#import time
 from time import gmtime, strftime
 from time import time
-import tkinter.messagebox
 root = Tk()
 global serialCAN
-from tkinter import filedialog
-from tkinter import messagebox
+import serial
 import serial.tools.list_ports
+import sys
+import os
+from os import path, environ
 
 
 class Data( ):
@@ -358,9 +361,6 @@ class MainProgram( Frame ):
 	#This sets up the file where the program settings are saved if it does not already exist
 	def setupSettingsFile(self):
 		APPNAME = "Makesmith"
-		import sys
-		from os import path, environ
-		import os
 		if sys.platform == 'darwin':
 			from AppKit import NSSearchPathForDirectoriesInDomains
 			appdata = path.join(NSSearchPathForDirectoriesInDomains(14, 1, True)[0], APPNAME)
